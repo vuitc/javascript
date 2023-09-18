@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Infinite Scroll - Quotes</title>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Sanchez:400italic,400);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+body {
+    font-family: 'Sanchez', serif;
+    font-size: 12px;
+    background: #040E27;
+    color: #fff;
+    margin: 0 20px;
+
+}
+
+h1 {
+    font-size: 36px;
+    margin: 30px;
+    text-align: center;
+    text-transform: uppercase;
+
+}
+
+.container {
+    max-width: 768px;
+    margin: 2em auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.quotes {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+blockquote {
+    margin-bottom: 25px;
+}
+
+.quote {
+    position: relative;
+    font-size: 20px;
+    line-height: 1.7em;
+    word-break: break-word;
+
+
+}
+
+.quote footer {
+    font-size: 0.6em;
+    font-weight: 700;
+    color: #d3d3cf;
+    text-align: right;
+}
+
+.quote footer:before {
+    content: '\2015';
+}
+
+.quote:after {
+    content: '\201D';
+    position: absolute;
+    top: 0.28em;
+    right: 0;
+    font-size: 6em;
+    font-style: italic;
+    color: #e7e6e4;
+    z-index: -1;
+}
+
+/* loader */
+
+.loader {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+
+}
+
+
+.loader.show {
+    opacity: 1;
+}
+
+.loader div {
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    width: 16px;
+    background: #f4f4f4;
+    animation: loader 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+
+.loader div:nth-child(1) {
+    left: 8px;
+    animation-delay: -0.24s;
+}
+
+.loader div:nth-child(2) {
+    left: 32px;
+    animation-delay: -0.12s;
+}
+
+.loader div:nth-child(3) {
+    left: 56px;
+    animation-delay: 0;
+}
+
+@keyframes loader {
+    0% {
+        top: 8px;
+        height: 64px;
+    }
+
+    50%,
+    100% {
+        top: 24px;
+        height: 32px;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Programming Quotes</h1>
+
+        <div class="quotes">
+        </div>
+
+        <div class="loader">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+   <script>
+  const quotesEl=document.querySelector('.quotes');
+  const loader=document.querySelector('.loader');
+  console.log(quotesEl);
+  const getQuotes=async (page,limit)=>{
+    const url=`https://api.javascripttutorial.net/v1/quotes/?page=${page}&limit=${limit}`;
+    const response=await fetch(url);
+    if(!response.ok){
+        throw new Error(`An error occurred: ${response.status}`);
+    }
+    return await response.json();
+  };
+  const c=getQuotes(1,10);
+  console.log(c);
+  const showQuotes = (quotes) => {
+    quotes.forEach(quote => {
+        const quoteEl = document.createElement('blockquote');
+        quoteEl.classList.add('quote');
+
+        quoteEl.innerHTML = `
+            <span>${quote.id})</span>
+            ${quote.quote}
+            <footer>${quote.author}</footer>
+        `;
+
+        quotesEl.appendChild(quoteEl);
+    });
+};
+// c1
+/*
+    callback truyen vào then() nhận tham số quotes
+    sẻ được gọi khi promise thành công. Ko thành công vào catch bắt lỗi
+    showquotes() để xử lí promise thành công xử lí api.
+*/
+getQuotes(1,20)
+.then((quotes)=>{
+    showQuotes(quotes.data);
+})
+.catch((error)=>{
+    console.log(error.message);
+});
+// c2
+/*  khai báo hàm không tên
+    async hàm bất đồng bộ=> await để đợi promise thành công  nếu ko trả về kq thì tạm dừng code tiếp theo
+    showquotes() để xử lí promise thành công xử lí api.
+    catch bắt lỗi 
+    gọi hàm ()
+*/ 
+(async()=>{
+    try {
+        const quotes=await getQuotes(3,10);
+        showQuotes(quotes.data);
+    } catch (error) {
+        console.log(error.message);
+    }
+})();
+   </script>
+</body>
+</html>

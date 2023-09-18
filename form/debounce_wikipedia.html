@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Search</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+:root {
+    --primary-color: #00369a;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    background-color: #fff;
+    margin: 0 20px;
+
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 0;
+    margin: 0 auto;
+    max-width: 768px;
+
+}
+
+main {
+    margin: 0 auto;
+    max-width: 768px;
+}
+
+
+
+h1 {
+    padding: 5px 0;
+    font-size: 1.7rem;
+    color: #111;
+    text-align: center;
+}
+
+input[type="text"] {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: solid 2px #f0f0f0;
+    border-radius: 50px;
+    outline: none;
+    width: 100%;
+
+}
+
+#searchResult {
+    margin-top: 1rem;
+
+}
+
+#searchResult article {
+    padding: 0;
+    margin: 20px 0;
+}
+
+#searchResult article h2 {
+    font-size: 1.1rem;
+}
+
+.highlight {
+    background-color: #fff6ea;
+    font-weight: bold;
+    padding: 5px;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Wikipedia_svg_logo-es.svg" alt="wikipedia">
+        <h1>Wikipedia Search</h1>
+        <input type="text" name="searchTerm" id="searchTerm" placeholder="Enter a search term...">
+    </header>
+    <main id="searchResult"></main>
+    <script>
+     const searchTermElem = document.getElementById('searchTerm');
+const searchResultElem = document.getElementById('searchResult');
+
+searchTermElem.select();
+
+searchTermElem.addEventListener('input', function (event) {
+    search(event.target.value);
+});
+const debounce=(fn,delay=500)=>{
+    let timeoutId;
+    return(...args)=>{
+        //clear timeout
+        if(timeoutId){
+            clearTimeout(timeoutId);
+        }
+        timeoutId=setTimeout(()=>{
+            fn.apply(null,args)
+        },delay)
+    };
+}
+const search = debounce( async (searchTerm) => {
+    try {
+        if(!searchTerm){
+            searchResultElem.innerHTML = '';
+            return;
+        }
+        const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info|extracts&inprop=url&utf8=&format=json&origin=*&srlimit=10&srsearch=${searchTerm}`;
+        /*
+            https://en.wikipedia.org địa chỉ gốc
+            /w/api.php đường dẫn tới API 
+            ?action=query chỉ yêu cầu query tìm kiếm
+            &list=search list danh sách cần được trả về truy vấn yêu cầu api trả về search tìm kiếm
+            &prop=info|extracts chỉ định thuộc tính mục trả về
+            &inprop=url thuộc tính bổ sung
+            &utf8= định dang theo kiểu uf8
+            &format=json dử liệu kết quả json
+            &origin=* nguôn gốc yêu cầu api
+        
+        */ 
+
+        const response = await fetch(url);
+        const searchResults = await response.json();
+        console.log(searchResults.query.search);
+        const searchResultHtml = generateHTML(searchResults.query.search, searchTerm);
+        searchResultElem.innerHTML = searchResultHtml;
+    } catch (error) {
+        console.log(error);
+    }
+});
+const createDiv=(html)=>{
+    const div=document.createElement('div');
+    div.textContent=html;
+    return div.textContent;
+};
+const highlight=(str,keyword,className='highlight')=>{
+    const h1=`<span class='${className}'>${keyword}</span>`;
+    return str.replace(new RegExp(keyword,'gi'),h1);
+};
+const generateHTML=(results,searchTerm)=>{
+    return results.map(result=>{
+        const title=createDiv(result.title);
+        const snippet=highlight(createDiv(result.snippet),searchTerm);
+        return  `<article>
+                <a href="https://en.wikipedia.org/?curid=${result.pageid}">
+                    <h2>${title}</h2>
+                </a>
+                <div class="summary">${snippet}...</div>
+            </article>`;
+    })
+    .join('');
+};
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="Description" content="Enter your description here"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+   body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f3f3;
+}
+
+.container {
+    text-align: center;
+    width: 800px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.le {
+    margin-bottom: 20px;
+}
+
+.longcau {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: #f8b500;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.longcau span {
+    font-size: 48px;
+}
+
+.butt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.butt button {
+    margin: 0 8px;
+}
+
+.ri {
+    margin-top: 48px;
+}
+
+.so {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.so::before,
+.so::after {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+}
+
+.so::before {
+  top: 0;
+  left: 0;
+}
+
+.so::after {
+  bottom: 0;
+  right: 0;
+}
+
+.so span {
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+  font-size: 48px;
+  font-weight: bold;
+
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.so:nth-child(odd) {
+    background-color: #00a8ff;
+    color: #fff;
+}
+
+.so:nth-child(even) {
+    background-color: #ff3f34;
+    color: #fff;
+}
+
+
+</style>
+
+</script>
+
+
+<title>Quay số Lô Tô</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <h1>Con số may mắn</h1>
+                <div class="le">
+                    <div class="longcau" id="hienso">
+
+                    </div>
+                    <div class="butt d-flex">
+                        <button class="butt0 btn-success btn rounded rounded-pill" onclick="napso()">Nạp số</button>
+                        <button class="butt1 btn-danger btn rounded rounded-pill" onclick="quayso()">Quay số</button>
+                        <button class="butt2 btn btn-success rounded rounded-pill" onclick="dunglai()">Dừng lại</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="ri row" id="kq">
+                      
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+ var mangso = [];
+var varquayso;
+var chuoikq = [];
+var isStopped = false;
+
+function napso() {
+  for (let i = 1; i < 61; i++) {
+    mangso.push(i);
+  }
+  console.log(mangso);
+}
+
+function quayso() {
+  document.getElementById("hienso").innerText = mangso[0];
+  isStopped = false;
+  varquayso = setInterval(getso, 100);
+}
+
+function getso() {
+  if (isStopped || mangso.length === 0) {
+    clearInterval(varquayso);
+    return;
+  }
+
+  var randomIndex = Math.floor(Math.random() * mangso.length);
+  var sohientai = mangso[randomIndex];
+
+  mangso.splice(randomIndex, 1);
+
+  document.getElementById("hienso").innerText = sohientai;
+}
+
+function dunglai() {
+  if (!isStopped) {
+    var sohientai = document.getElementById("hienso").innerText;
+    chuoikq += `<div class="so d-flex justify-content-center align-items-center rounded rounded-circle ball">${sohientai}</div>`;
+    document.getElementById("kq").innerHTML = chuoikq;
+    isStopped = true;
+  }
+}
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+</body>
+</html>
